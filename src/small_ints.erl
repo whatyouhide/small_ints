@@ -20,11 +20,14 @@ decode_varint(Data) when is_binary(Data) ->
 encode_varint(I) when is_integer(I), I >= 0, I =< 127 ->
     <<I>>;
 encode_varint(I) when is_integer(I), I > 127 ->
-    <<1:1, (I band 127):7, (encode_varint(I bsr 7))/binary>>.
+    <<1:1, (I band 127):7, (encode_varint(I bsr 7))/binary>>;
+encode_varint(I) when is_integer(I), I < 0 ->
+    erlang:error({badarg, I}).
 
 -spec decode_zigzag(non_neg_integer()) -> integer().
-decode_zigzag(I) when I rem 2 == 0 -> I div 2;
-decode_zigzag(I) when I rem 2 == 1 -> - (I div 2) - 1.
+decode_zigzag(I) when I >= 0, I rem 2 == 0 -> I div 2;
+decode_zigzag(I) when I >= 0, I rem 2 == 1 -> - (I div 2) - 1;
+decode_zigzag(I) when I < 0                -> erlang:error({badarg, I}).
 
 -spec encode_zigzag(integer()) -> non_neg_integer().
 encode_zigzag(I) when is_integer(I), I >= 0 -> I * 2;
@@ -64,14 +67,16 @@ decode_varint_test() ->
 
 encode_varint_test() ->
     ?assertEqual(<<1:8>>, encode_varint(1)),
-    ?assertEqual(<<44034:16>>, encode_varint(300)).
+    ?assertEqual(<<44034:16>>, encode_varint(300)),
+    ?assertError({badarg, -7}, encode_varint(-7)).
 
 decode_zigzag_test() ->
     ?assertEqual(0, decode_zigzag(0)),
     ?assertEqual(-1, decode_zigzag(1)),
     ?assertEqual(1, decode_zigzag(2)),
     ?assertEqual(5, decode_zigzag(10)),
-    ?assertEqual(-5, decode_zigzag(9)).
+    ?assertEqual(-5, decode_zigzag(9)),
+    ?assertError({badarg, -10}, decode_zigzag(-10)).
 
 encode_zigzag_test() ->
     ?assertEqual(0, encode_zigzag(0)),
