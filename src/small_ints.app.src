@@ -1,0 +1,11 @@
+{application, 'small_ints',
+ [{description, "ZigZag and varint encoding and decoding of integers"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []}
+ ]}.
