@@ -10,5 +10,5 @@
   {modules, []},
   {contributors, ["Andrea Leopardi"]},
   {licenses, ["MIT"]},
-  {links, [{"GitHub", "https://github.com/whatyouhide/small_ints"}]},
+  {links, [{"GitHub", "https://github.com/whatyouhide/small_ints"}]}
  ]}.
